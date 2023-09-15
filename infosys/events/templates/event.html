@@ -1,0 +1,15 @@
+{% extends 'flatpages/default.html' %}
+{% load static %}
+
+{% block content %}
+<p align="center"><h1> {{ event.data }}</h1>
+<h3>Название мероприятия: </h3>{{ event.title }}<br>
+<h3>Описание меропрития: </h3>{{ event.description }}<br>
+<h3>Место провидения:</h3>
+            {% for hall in event.room.all %}
+            <p>{{ hall }}</p>
+            {% endfor %}<br>
+<h1> {{ event.begin_time|time:'H:i' }} -- {{ event.finish_time|time:'H:i' }}</h1>
+<img src="{{ SITE_URL }} {{ event.logo.url }}" width="640" height="480">
+</p>
+{% endblock content %}
