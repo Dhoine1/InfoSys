@@ -1,0 +1,88 @@
+﻿<!DOCTYPE html>
+{% load static %}
+{% load custom_filters %}
+
+<html>
+
+<head lang="en">
+    <meta http-equiv="refresh" content="30">
+    <meta charset="UTF-8">
+    <style>
+   div {
+    background: #d0e8c3; /* Цвет фона */
+    color: #559233; /* Цвет текста */
+    padding: 10px; /* Поля вокруг текста */
+    border-radius: 50px; /* Уголки */
+	font-size: 40px;
+	font-family: Arial, Helvetica, sans-serif;
+   }
+  </style>
+
+
+</head>
+
+<body background = "{% static 'pict/back_new.jpg' %}">
+<table border="0" cellpadding="0" cellspacing="20" width="100%">
+	<tr height=100 valign="center" align="center">
+		<td width=10% >
+			<img src="{% static 'pict/mv.png' %}" width="100" height="100">
+		</td>
+
+		<td width=80%>
+			<div>
+			МЕРОПРИЯТИЯ НА СЕГОДНЯ:      {{ date_show }}
+			</div>
+		</td>
+
+		<td width=10% >
+			<div>
+			{{ time_show }}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center">
+			<img src="{% static 'pict/Green-line-divider.png' %}">
+		</td>
+	</tr>
+</table>
+
+
+<table border="0" cellpadding="0" cellspacing="20" width="100%">
+
+	<tr valign="center" align="center">
+		{% for event in event_today %}
+		<td width=15% valign="top" align="center">
+			<div style="font-size: 25px; color: #993333">
+				{{ event.begin_time|time:'H:i' }} - {{ event.finish_time|time:'H:i' }}
+			</div>
+		</td>
+
+		<td width=60% valign="top" align="center" >
+			<div style="font-size: 25px; color: #993333">
+			{{ event.title }}
+			</div>
+		</td>
+
+		<td width=25%  align="center">
+			<div style="font-size: 25px; color: #993333">
+
+			{% for hall in event.room.all %}
+				<table cellspacing="5">
+					<tr>
+					<td>
+			           		 {{ hall }} - {{ hall.hall_place }} <br>
+						<font color="black">{{ hall.hall_name_eng }} - {{ hall.hall_place|rename }}</font>
+						
+					</td>
+					</tr>
+				</table>
+
+			{% endfor %}
+			</div>
+		</td>
+	</tr>
+	{% endfor %}
+</table>
+</body>
+</html>

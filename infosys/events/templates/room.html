@@ -2,95 +2,62 @@
 {% load static %}
 
 <html>
+
 <head lang="en">
     <meta http-equiv="refresh" content="60">
     <meta charset="UTF-8">
-    <title></title>
+	<style>
+   div {
+    background: #d0e8c3; /* Цвет фона */
+    color: #559233; /* Цвет текста */
+    padding: 10px; /* Поля вокруг текста */
+    border-radius: 50px; /* Уголки */
+	font-size: 30px;
+	font-family: Arial, Helvetica, sans-serif;
+   }
+   .widthSet {
+    max-width: 1000px;
+    max-height: 600px;
+}
 
-
-    <style type="text/css">
-        <!--
-
-        body {overflow: hidden; }
-
-        .style1 {
-            font-size: 52px;
-            font-family: Arial, Helvetica, sans-serif;
-            font-weight: bold;
-            color: #FFFFFF;
-        }
-
-        .style4 {
-            color: #FFFF99;
-            font-size: 75px;
-            font-family: Arial, Helvetica, sans-serif;
-            font-weight: bold;
-        }
-
-
-        .style2 {
-            font-size: 24px;
-            color: #D2FFFF;
-            font-family: Arial, Helvetica, sans-serif;
-
-        }
-
-        .fff {  height: 300px;
-            width: 1280px;
-            clear: none;
-            float: none;
-            overflow: hidden;
-        }
-
-
-        -->
-    </style>
-
+  </style>
 </head>
 
-<body marginheight="0" marginwidth="0" marginbottom="0" marginleft="0" marginright="0" margintop="0" bgcolor="black">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-        <tr style="height: 160px">
-            <td style="width: 160px; background-color: #000066" align="center" valign="middle"><img src="{% static 'pict/mv.jpg' %}" width="150" height="150" /></td>
-            <td>
-                <table width="100%" height="160" border="0" cellpadding="0" cellspacing="0">
-                    <tr style="background-color: #003344" height="80"><td class="style1" align="center" valign="middle" style="margin:0px; padding:0px">
-                        {{ hall }}</td></tr>
-                    <tr style="background-color: #003366" height="80"><td  class="style1" align="center" valign="middle" style="margin:0px; padding:0px">
-                        {{ hall_eng }}</td></tr>
-                </table>
-            </td>
-            <td style="width: 260px; background-color: #000066" align="center" valign="middle"><span class="style4" id="txtClock">{{ time_show }}</span></td>
-        </tr>
-        <tr>
-            <td style="background-color: #336699" colspan="3">
-                <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr height="300" >
-                        <td align="center" valign="middle" height="300">
-                            <div class="fff">
-                                <table height="100%" width="100%">
-                                    <tr><td align="center" valign="middle" ><span class="style1">
-                                       {{ event_now }}
-                                        </span></td></tr>
-                                    <tr><td align="center" valign="middle" ><span class="style2">
-                                        {{ dis_event_now }}
-                                        </span></td></tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr height="564" align="center" valign="middle" >
-                        <td height="564" width="100%" align="center" valign="middle" style="margin:10px; padding:10px">
+<body background = "{% static 'pict/back_new.jpg' %}">
+<table border="0" cellpadding="0" cellspacing="20" width="100%">
+	<tr height=100 valign="center" align="center">
+		<td width=10% >
+			<img src="{% static 'pict/mv.png' %}" width="130" height="130">
+		</td>
+	
+		<td width=70%>
+			<div>
+			{{ hall }}<hr>
+			 {{ hall_eng }}
+			</div>
+		</td>
+	
+		<td width=10% >
+			<div style="font-size: 80px">
+			{{ time_show }}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" style="font-size: 60px; color: #ffffff"  >
+			{{ event_now }}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3" align="center" height="600">
+			{% if pict_event_now != "" %}
+			<img style="object-fit: cover" src="{{ SITE_URL }} {{  pict_event_now.url }}" alt="    "  class="widthSet">
+			{% endif %}
 
-
-
-                                       <img src="{{ SITE_URL }} {{  pict_event_now.url }}" width="640" height="480">
-
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+		</td>
+	</tr>
+	
+</table>
 </body>
+
 </html>

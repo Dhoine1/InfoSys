@@ -13,7 +13,7 @@
      <td width="5%" height="50"><h2 align="center">ID</h2></td>
      <td width="10%" height="50"><h2 align="center">Дата</h2></td>
      <td width="50%"><h2 align="center">Название</h2></td>
-     <td width="10%"><h2 align="center">Место провидения</h2></td>
+     <td width="10%"><h2 align="center">Место проведения</h2></td>
      <td width="10%"><h2 align="center">Время начала</h2></td>
      <td width="10%"><h2 align="center">Время окончания</h2></td>
      <td width="10%"><h2 align="center">Действия</h2></td>
@@ -47,8 +47,30 @@
             <p><h4 align="center"> <a href="/events/{{ event.id }}/delete"> Удалить </h4></p>
         </td>
     </tr>
-    {% endfor %}
+   {% endfor %}
 </table>
+
+<br>
+{% if page_obj.has_previous %}
+       <a href="?page=1">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?page={{ page_obj.previous_page_number }}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+{% endif %}
+
+
+{{ page_obj.number }}
+{% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+{% endif %}
+
+
+
 
 {% endblock content %}
 </body>
