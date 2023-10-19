@@ -3,6 +3,7 @@ from .models import Event
 
 
 class EventForm(forms.ModelForm):
+
     class Meta:
         model = Event
         fields = [
@@ -13,4 +14,5 @@ class EventForm(forms.ModelForm):
             'finish_time',
             'logo',
             'room',
+            'room_in_list',
         ]

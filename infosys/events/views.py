@@ -6,7 +6,7 @@ from django.views.decorators.cache import cache_page
 from django.shortcuts import render
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Event, Halls
+from .models import Event, Halls, HallList
 from .forms import EventForm
 from .filters import EventFilter
 
@@ -99,7 +99,9 @@ def room_view(request, pk, **kwargs):
                                              'dis_event_now': dis_event_now,
                                              'pict_event_now': pict_event_now})
     else:
-        return render(request, 'no_event.html')
+        return render(request, 'no_event_room.html', {'hall': hall,
+                                                 'hall_eng': hall_eng,
+                                                 'time_show': time_show})
 
 
 #экран списка мероприятий

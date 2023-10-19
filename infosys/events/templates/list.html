@@ -67,12 +67,12 @@
 		<td width=25%  align="center">
 			<div style="font-size: 25px; color: #993333">
 
-			{% for hall in event.room.all %}
+			{% for hall in event.room_in_list.all %}
 				<table cellspacing="5">
 					<tr>
 					<td>
-			           		 {{ hall }} - {{ hall.hall_place }} <br>
-						<font color="black">{{ hall.hall_name_eng }} - {{ hall.hall_place|rename }}</font>
+			           		 {{ hall }} - {{ hall.hall_in_list_place }} <br>
+						<font color="black">{{ hall.name_in_list_eng }} - {{ hall.hall_in_list_place|rename }}</font>
 						
 					</td>
 					</tr>

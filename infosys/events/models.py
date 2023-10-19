@@ -1,5 +1,5 @@
 from django.db import models
-import datetime
+from datetime import datetime, timedelta
 from django.urls import reverse
 
 
@@ -16,14 +16,28 @@ class Halls(models.Model):
         return self.hall_name
 
 
+class HallList(models.Model):
+    name_in_list = models.CharField(max_length=32, unique=True)
+    name_in_list_eng = models.CharField(max_length=32, null=True)
+    hall_in_list_place = models.CharField(max_length=32)
+
+    class Meta:
+        verbose_name = 'Зал в списке'
+        verbose_name_plural = 'Залы в списке'
+
+    def __str__(self):
+        return  self.name_in_list
+
+
 class Event(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название мероприятия')
     description = models.TextField(null=True, verbose_name='Описание мероприятия', blank=True)
-    data = models.DateField(default=datetime.date.today, verbose_name='Дата проведения')
-    begin_time = models.TimeField(verbose_name='Время начала')
-    finish_time = models.TimeField(verbose_name='Время окончания')
+    data = models.DateField(default=(datetime.now() + timedelta(days=1)), verbose_name='Дата проведения')
+    begin_time = models.TimeField(default="09:00", verbose_name='Время начала')
+    finish_time = models.TimeField(default="18:00",verbose_name='Время окончания')
     logo = models.FileField(upload_to="images/", verbose_name='Logo', blank=True)
     room = models.ManyToManyField(Halls, through='Location', verbose_name='Зал')
+    room_in_list = models.ManyToManyField(HallList, through='LocList', verbose_name='Отображение в списке')
 
     class Meta:
         verbose_name = 'Мероприятие'
@@ -39,3 +53,8 @@ class Event(models.Model):
 class Location(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     hall = models.ForeignKey(Halls, on_delete=models.CASCADE)
+
+
+class LocList(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    halllist = models.ForeignKey(HallList, on_delete=models.CASCADE)
