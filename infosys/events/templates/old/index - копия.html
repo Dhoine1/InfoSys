@@ -1,13 +1,37 @@
-{% extends 'flatpages/default.html' %}
+<!DOCTYPE html>
+{% load static %}
 
-{% block content %}
+<html>
 
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Инфосистема "Московские Ворота"</title>
+</head>
+
+<body class="body">
+    <header class="header">
+        <div class="logo"> <img src="{% static 'pict/logo_mv.png' %}" alt="Logo"> </div>
+        <div class="title">Инфосистема "Московские Ворота"</div>
+    </header>
+
+    <nav class="menu">
+        <ul class="menu_list">
+            <li class="menu_item"><a href="/">Стартовая страница</a></li>
+            <li class="menu_item"><a href="/events/create/">Добавить мероприятие</a></li>
+            <li class="menu_item"><a href="/events/search/">Поиск</a></li>
+            <li class="menu_item"><a href="/events/anek/">Програмистский анекдот</a></li>
+        </ul>
+
+    </nav>
+
+    <main class="main">
 		На экране мероприятий отображается {{ rows }} строк.
 		<form enctype="multipart/form-data" method="post" >
 			{% csrf_token %}
 			<label>Изменить колличество: </label>
-			<textarea cols="1" rows="1" name="numbers_of_row" id="number_rows"></textarea>
-			<button type="submit" id="row_button">Сохранить</button>
+			<textarea cols="1" name="numbers_of_row" maxlength="2"></textarea>
+			<button type="submit">Сохранить</button>
 
 		</form>
 	
@@ -38,9 +62,7 @@
                 {% endfor %}</h3>
             </td>
             <td>
-                {% for room in event.room_in_list.all %}
-                <p>{{ room }}</p>
-                {% endfor %}</h3>
+                пока пусто
             </td>
             <td>
                 {{ event.begin_time|time:'H:i' }}
@@ -49,9 +71,8 @@
                 {{ event.finish_time|time:'H:i' }}
             </td>
             <td>
-                <p><a href="/events/{{ event.id }}/edit"> Изменить</a></p>
-                <p><a href="/events/{{ event.id }}/delete"> Удалить </a></p>
-                <p><a href="/events/{{ event.id }}/copy"> Копировать </a></p>
+                <p><a href="/events/{{ event.id }}/edit"> Изменить</p>
+                <p><a href="/events/{{ event.id }}/delete"> Удалить </p>
             </td>
         </tr>
             {% endfor %}
@@ -74,7 +95,11 @@
 				<a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
 			{% endif %}
 		{% endif %}
+    </main>
 
+    <footer class="footer">
 
-	
-{% endblock content %}
+    </footer>
+</body>
+
+</html>

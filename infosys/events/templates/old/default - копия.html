@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <title>Инфосистема "Московские ворота"</title>                
+    </head>
+	
+	
+    <body>
+    <img src="{% static 'pict/banner.JPG' %}" width="100%">
+
+    <table width="100%"  cellspacing="10">
+        <tr>
+            <td width="10%" valign="top">
+                <h3><a href="/">Стартовая страница</a></h3>
+                <hr>
+                <h3><a href="/events/create/">Добавить мероприятие</a></h3>
+                <hr>
+                <h3><a href="/events/search/">Поиск</a></h3>
+                <hr>
+                <h3><a href="/events/anek/">Програмистский анекдот</a></h3>
+            </td>
+            <td width="90%">
+                <br>
+                    {% block content %}
+                    {{ flatpage.content }}
+                    {% endblock content %}
+            </td>
+        </tr>
+
+    </table>
+
+
+
+    </body>
+</html>

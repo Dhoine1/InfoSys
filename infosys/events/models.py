@@ -26,18 +26,29 @@ class HallList(models.Model):
         verbose_name_plural = 'Залы в списке'
 
     def __str__(self):
-        return  self.name_in_list
+        return self.name_in_list
+
+
+class Manager(models.Model):
+    name = models.CharField(max_length=255, verbose_name="Менеджер")
+
+    def __str__(self):
+        return self.name
 
 
 class Event(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название мероприятия')
-    description = models.TextField(null=True, verbose_name='Описание мероприятия', blank=True)
+    description = models.TextField(null=True, verbose_name='Компания', blank=True)
     data = models.DateField(default=(datetime.now() + timedelta(days=1)), verbose_name='Дата проведения')
     begin_time = models.TimeField(default="09:00", verbose_name='Время начала')
-    finish_time = models.TimeField(default="18:00",verbose_name='Время окончания')
+    finish_time = models.TimeField(default="18:00", verbose_name='Время окончания')
     logo = models.FileField(upload_to="images/", verbose_name='Logo', blank=True)
     room = models.ManyToManyField(Halls, through='Location', verbose_name='Зал')
     room_in_list = models.ManyToManyField(HallList, through='LocList', verbose_name='Отображение в списке')
+    quantity = models.CharField(max_length=5, default="n/a", verbose_name="Колличество участников")
+    contact = models.TextField(null=True, verbose_name="Контакт организатора", blank=True)
+    parking = models.CharField(max_length=255, verbose_name="Парковка", blank=True)
+    responce = models.ForeignKey(Manager, on_delete=models.CASCADE, verbose_name="Ответственный")
 
     class Meta:
         verbose_name = 'Мероприятие'
@@ -58,3 +69,11 @@ class Location(models.Model):
 class LocList(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     halllist = models.ForeignKey(HallList, on_delete=models.CASCADE)
+
+
+class Mail(models.Model):
+    email = models.EmailField(max_length=254, verbose_name="e-mail", blank=False)
+
+    class Meta:
+        verbose_name = 'Список рассылки'
+        verbose_name_plural = 'Список рассылки'

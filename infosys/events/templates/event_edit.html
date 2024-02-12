@@ -2,11 +2,39 @@
 
 
 {% block content %}
+
+
 <h1>Мероприятие</h1>
 <hr>
-<form enctype="multipart/form-data" method="post" action=".">
+<form enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Сохранить</button>
+    <table id='edit_table'>
+        <tr>
+            <td>
+                <label>Название*: </label> {{ form.title }} <br><br>
+                <label>Компания: </label>{{ form.description }} <br><br>
+                <label>Дата проведения*: </label>{{ form.data }} <br><br>
+                <label>Время начала*: </label>{{ form.begin_time }} <br><br>
+                <label>Время окончания*: </label>{{ form.finish_time }} <br><br>
+                <label>Логотип: </label>   {{ form.logo }} <br><br>
+                <label>Колличество участников: </label>{{ form.quantity }} <br><br>
+                <label>Контакты организатора: </label>{{ form.contact }} <br><br>
+                <label>Паркинг: </label>{{ form.parking }} <br><br>
+                <label>Ответственный менеджер*: </label>{{ form.responce }} <br><br>
+                <button type="submit" id="row_button">Сохранить</button>
+            </td>
+            <td>
+                <label>Перед залами: </label> <br>
+                {{ form.room }}
+            </td>
+            <td >
+                <label>Экран списка: </label><br> {{ form.room_in_list }}
+            </td>
+        </tr>
+
+    </table><br><br>
+
 </form>
+
+
 {% endblock content %}

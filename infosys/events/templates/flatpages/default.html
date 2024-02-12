@@ -1,34 +1,44 @@
-<!DOCTYPE html>
-{% load static %}
-<html lang="en">
-    <head>
-        <title>Инфосистема "Московские ворота"</title>                
-    </head>
-	
-	
-    <body>
-    <img src="{% static 'pict/banner.JPG' %}" width="100%">
 
-    <table width="100%"  cellspacing="10">
-        <tr>
-            <td width="10%" valign="top">
-                <h3><a href="/">Стартовая страница</a></h3>
-                <hr>
-                <h3><a href="/events/create/">Добавить мероприятие</a></h3>
-                <hr>
-                <h3><a href="/events/search/">Поиск</a></h3>
-                <hr>
-                <h3><a href="/events/anek/">Програмистский анекдот</a></h3>
-            </td>
-            <td width="90%">
-                <br>
+{% load static %}
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Инфосистема "Московские Ворота"</title>
+</head>
+
+<body class="body">
+
+    <header class="header">
+        <div class="logo"> <img src="{% static 'pict/logo_mv.png' %}" alt="Logo"> </div>
+        <div class="title">Инфосистема "Московские Ворота"</div>
+    </header>
+
+    <nav class="menu">
+        <ul class="menu_list">
+            <li class="menu_item"><a href="/">Список мероприятий</a></li>
+            <li class="menu_item"><a href="/events/create/">Добавить мероприятие</a></li>
+            <li class="menu_item"><a href="/events/search/">Поиск</a></li>
+            <li class="menu_item"><a href="/events/send/">Рассылка</a></li>
+            <li class="menu_item"><a href="/events/anek/">Програмистский анекдот</a></li>
+        </ul>
+
+    </nav>
+
+    <main class="main">
                     {% block content %}
                     {{ flatpage.content }}
                     {% endblock content %}
-            </td>
-        </tr>
 
-    </table>
+    </main>
 
-    </body>
+    <footer class="niz">
+        <p>Разработка - Игнатьев Леонид</p>
+        <p>2023-2024 г.</p>
+    </footer>
+
+
+</body>
 </html>

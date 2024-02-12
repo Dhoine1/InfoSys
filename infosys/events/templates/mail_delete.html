@@ -1,7 +1,7 @@
 {% extends 'flatpages/default.html' %}
 
 {% block content %}
-<h1 class="h1_title">Удаление мероприятия: "{{ object.title }}"</h1>
+<h1 class="h1_title">Точно удалить адресс: {{ object.email }}?</h1>
 
 <form action="" method="post">
     {% csrf_token %}

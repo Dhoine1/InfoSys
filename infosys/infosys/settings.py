@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
     'events',
     'django_filters',
+    "django_apscheduler",
 ]
 
 SITE_ID = 1
@@ -128,6 +129,7 @@ STATIC_URL = 'static/'
 SITE_URL = '192.168.3.74:8000/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+INI_URL = 'E:/Pyton/infosys/infosys/events/static/pict/'
 
 STATICFILES_DIRS = [BASE_DIR / "events/static"]
 
@@ -142,3 +144,41 @@ CACHES = {
         'LOCATION': os.path.join(BASE_DIR, 'cache_files'),
     }
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'file_error': {
+            'format': '{asctime} {levelname} {message} {pathname} {exc_info}',
+            'datetime': '%Y.%m.%d %H:%M:%S',
+            'style': '{',
+
+        }
+    },
+    'handlers': {
+        'file_err': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'error.log',
+            'formatter': 'file_error',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file_err'],
+            'level': 'ERROR',
+        },
+    }
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.lancloud.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = "sales@hi-spb.com"
+EMAIL_HOST_PASSWORD = "mqD63Xkm"
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+DEFAULT_FROM_EMAIL = "sales@hi-spb.com"
+SERVER_EMAIL = "sales@hi-spb.com"

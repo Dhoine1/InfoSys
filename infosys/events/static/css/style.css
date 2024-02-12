@@ -1,0 +1,179 @@
+@font-face {
+    src: url(./EBGaramond08-Regular.otf);
+	  font-family: 'EBGaramond08';
+}
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+h2 {
+    color: red;
+    font-family: EBGaramond08;
+}
+
+.body {
+    background-color: bisque;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.header {
+    padding: 10px 10px;
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    margin: 10px;
+}
+
+.title {
+    width: 80%;
+    text-align: center;
+    margin: 10px;
+	font-family: EBGaramond08, serif;
+    font-size: 50px;   
+}
+
+.menu_list {
+    list-style-type: none;
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+    list-style: none;
+}
+
+.menu_item {
+    padding: 20px;
+}
+
+.menu_item a {
+    text-transform: uppercase;
+    text-decoration: none;
+    font-weight: bold;
+    color: green;
+    position: relative;
+}
+
+.menu_item a:hover {
+    color: #e62117;
+}
+
+.list_table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#edit_table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.main {
+    margin: 40px;
+    flex-grow: 1;
+}
+
+#edit_table th {
+    font-size: 20px;
+    font-weight: bold;
+    background: #b9c9fe;
+    border-top: 4px solid #aabcfe;
+    border-bottom: 1px solid white;
+    color: #039;
+    padding: 8px;
+	text-align: left;
+}
+
+#edit_table td {
+    background: #e8edff;
+    border-bottom: 1px solid white;
+    color: #669;
+    border-top: 1px solid transparent;
+    padding: 8px;
+	font-size: 18px;
+}
+
+.list_table th {
+    font-size: 20px;
+    font-weight: bold;
+    background: #b9c9fe;
+    border-top: 4px solid #aabcfe;
+    border-bottom: 1px solid white;
+    color: #039;
+    padding: 8px;
+	text-align: left;
+}
+
+.list_table td {
+    background: #e8edff;
+    border-bottom: 1px solid white;
+    color: #669;
+    border-top: 1px solid transparent;
+    padding: 8px;
+	font-size: 18px;
+}
+
+.list_table tr:hover td {
+    background: #ccddff;
+}
+
+#number_rows  {
+	background: #e8edff;
+}
+
+#row_button {
+	margin: 10px;
+	border: 2px;
+	border-radius: 100px;
+	background: green;
+	color: white;
+	font-size: 15px;
+	padding: 5px;
+}
+
+#row_button:hover {
+	background: #d0e8c3;
+	color: black;
+}
+
+.h1_title {
+	margin: 60px;
+	font-size: 2em;
+}
+
+#delete {
+	margin: 0px 0px 0px 60px;
+	border: 4px;
+	border-radius: 100px;
+	background: green;
+	color: white;
+	font-size: 20px;
+	padding:10px;
+}
+
+#delete:hover {
+	background: #d0e8c3;
+	color: black;
+}
+
+.niz {
+    background: #77808c;
+    color: white;
+    font-size: 14px;
+    text-align: right;
+    padding: 10px;
+    flex-shrink: 0;
+}
+
+.send_list {
+    margin: 30px;
+}
+
+#send_screen {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+}
