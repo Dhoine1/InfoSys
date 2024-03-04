@@ -5,14 +5,11 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.conf import settings
-from .models import Event, Halls, HallList, Mail
+from .models import Event, Halls, HallList, Mail, Location, LocList
 from .forms import EventForm
-from .filters import EventFilter
+from .filters import EventFilter, FastFilter
 from django.core.mail import EmailMultiAlternatives
 from copy import deepcopy
-
-# def index(request):
-#     return render(request, 'index.html')
 
 
 # Экран списка всех мероприятий. Стартовый.
@@ -22,12 +19,25 @@ class EventList(ListView):
     template_name = 'index.html'
     context_object_name = 'events'
     paginate_by = 10
+    filter_class = FastFilter
+
+    def get_queryset(self):
+        if self.request.GET:
+            queryset = super().get_queryset()
+            self.filterset = FastFilter(self.request.GET, queryset)
+            return self.filterset.qs
+        else:
+            queryset = Event.objects.all().order_by('-data', 'begin_time')
+            self.filterset = FastFilter(self.request.GET, queryset)
+            return self.filterset.qs
 
     def get_context_data(self, *args, **kwargs):
         context = super(EventList, self).get_context_data(*args, **kwargs)
         config = configparser.ConfigParser()
         config.read(f'{settings.INI_URL}settings.ini')
         context['rows'] = int(config.get('List', 'row_counts'))
+        context['today'] = datetime.datetime.now()
+        context['filterset'] = self.filterset
         return context
 
     @staticmethod
@@ -43,6 +53,10 @@ class EventList(ListView):
         with open(f'{settings.INI_URL}settings.ini', 'w') as configfile:
             config2.write(configfile)
         return redirect('./')
+
+
+
+
 
 
 # Экран поиска мероприятий
@@ -105,7 +119,7 @@ def room_view(request, pk, **kwargs):
 
     event_today = Event.objects.filter(data__exact=datetime.datetime.now().date(),
                                        begin_time__lte=start_time.time(),
-                                       finish_time__gte=datetime.datetime.now().time())
+                                       finish_time__gte=datetime.datetime.now().time()).order_by('-begin_time')
 
     event_now = ''
     dis_event_now = ""
@@ -138,7 +152,8 @@ def list_view(request):
     start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
     event_today = Event.objects.filter(data__exact=datetime.datetime.now().date(),
                                        begin_time__lte=start_time.time(),
-                                       finish_time__gte=datetime.datetime.now().time()).order_by('begin_time')
+                                       finish_time__gte=datetime.datetime.now().time(),
+                                       room_in_list__isnull=False).order_by('begin_time').distinct()
 
     # срезает список мероприятий по N штук через файл
     path_to_ini = f'{settings.INI_URL}Settings.ini'
@@ -184,7 +199,8 @@ def list_view_const(request):
     start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
     event_today = Event.objects.filter(data__exact=datetime.datetime.now().date(),
                                        begin_time__lte=start_time.time(),
-                                       finish_time__gte=datetime.datetime.now().time()).order_by('begin_time')
+                                       finish_time__gte=datetime.datetime.now().time(),
+                                       room_in_list__isnull=False).order_by('begin_time').distinct()
     path_to_ini = f'{settings.INI_URL}Settings.ini'
 
     try:
@@ -195,7 +211,6 @@ def list_view_const(request):
         line = int(config.get('List', 'sheet_number'))
         if line > count_event:
             line = 0
-
     except:
         NUMBER_OF_ROWS = 3
         line = 0
@@ -270,7 +285,7 @@ def send_list(request):
                 for i in item_list.room.all():
                     rooms += f' <b>{i.hall_name}</b> - {i.hall_place}<br>'
                 list_to_send_text += f'-- {item_list.title} --'
-                list_to_send += f'<tr><td>{day}</td>' \
+                list_to_send += f'<tr><td>{item_list.data.strftime("%d-%m-%Y")}</td>' \
                                 f'<td>{item_list.begin_time.strftime("%H:%M")} - {item_list.finish_time.strftime("%H:%M")}</td>' \
                                 f'<td>{rooms}</td><td><strong>{item_list.title}</strong></td><td>{item_list.quantity}</td>' \
                                 f'<td>{item_list.description}</td><td>{item_list.contact}</td><td>{item_list.responce}</td>' \
@@ -281,7 +296,7 @@ def send_list(request):
                 list_to_send = 'Завтра мероприятий нет'
 
             for email in emails:
-                title = f'Мероприятия на завтра {tomorrow.strftime("%d-%m-%Y")}'
+                title = f'Мероприятия на: {tomorrow.strftime("%d-%m-%Y")}'
                 msg = EmailMultiAlternatives(title, list_to_send_text, None, [email])
                 msg.attach_alternative(list_to_send, "text/html")
                 msg.send()
@@ -303,20 +318,29 @@ class MailDelete(DeleteView):
     success_url = reverse_lazy('email')
 
 
+# создание копии мероприятия
 def copy(request, pk):
     model_instance = Event.objects.get(pk__exact=pk)
     cloned_instance = deepcopy(model_instance)
     cloned_instance.pk = None
+    new_data = datetime.datetime.now() + datetime.timedelta(weeks=10)
+    cloned_instance.data = new_data
     cloned_instance.save()
 
-    # for related_obj in model_instance.room.all():
-    #     related_obj.pk = None
-    #     related_obj.foreign_key_to_instance = cloned_instance
-    #     related_obj.save()
-    #
-    # for related_obj in model_instance.room_in_list.all():
-    #     related_obj.pk = None
-    #     related_obj.foreign_key_to_instance = cloned_instance
-    #     related_obj.save()
+    for rooms in model_instance.room.all():
+        location = Location()
+        location.event_id = cloned_instance.pk
+        location.hall_id = rooms.pk
+        location.save()
+
+    for rooms_in_list in model_instance.room_in_list.all():
+        loclist = LocList()
+        loclist.event_id = cloned_instance.pk
+        loclist.halllist_id = rooms_in_list.pk
+        loclist.save()
 
     return redirect('../../events')
+
+# help
+def help(request):
+    return render(request, 'help.html')

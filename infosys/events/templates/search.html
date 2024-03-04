@@ -5,6 +5,7 @@
 
   <form action="" method="get">
        {{ filterset.form.as_p }}
+      <br>
        <input type="submit" value="Найти" id="delete">
    </form>
 
@@ -48,8 +49,9 @@
                 {{ event.finish_time|time:'H:i' }}
             </td>
             <td>
-                <p><a href="/events/{{ event.id }}/edit"> Изменить</p>
-                <p><a href="/events/{{ event.id }}/delete"> Удалить </p>
+                <p><a href="/events/{{ event.id }}/edit"> Изменить</a></p>
+                <p><a href="/events/{{ event.id }}/delete"> Удалить </a></p>
+				<p><a href="/events/{{ event.id }}/copy"> Копировать </a></p>
             </td>
         </tr>
         {% endfor %}

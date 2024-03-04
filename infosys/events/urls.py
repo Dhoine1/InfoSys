@@ -16,4 +16,5 @@ urlpatterns = [
     path('<int:pk>/mail_delete/', MailDelete.as_view(), name='mail_Delete'),
     path('<int:pk>/copy', copy),
     path('anek/', anek),
+    path('help/', help, name='help'),
     ]

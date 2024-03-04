@@ -2,14 +2,24 @@
 
 {% block content %}
 
-		На экране мероприятий отображается {{ rows }} строк.
-		<form enctype="multipart/form-data" method="post" >
-			{% csrf_token %}
-			<label>Изменить колличество: </label>
-			<textarea cols="1" rows="1" name="numbers_of_row" id="number_rows"></textarea>
-			<button type="submit" id="row_button">Сохранить</button>
 
-		</form>
+		<div id="index_top">
+            <div style="padding: 0px 50px 0px 0px">
+                На экране мероприятий отображается {{ rows }} строк.
+                <form enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <label>Изменить колличество: </label>
+                    <textarea cols="1" rows="1" name="numbers_of_row" id="number_rows"></textarea>
+                    <button type="submit" id="row_button">Сохранить</button>
+                </form>
+            </div>
+            <div>
+                <form action="" method="get">
+                {{ filterset.form.as_p }}
+                <button type="submit" id="row_button">Фильтровать</button>
+                </form>
+            </div>
+        </div>
 	
         <table class='list_table'>
             <th>ID</th>
