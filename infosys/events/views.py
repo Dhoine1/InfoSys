@@ -1,15 +1,18 @@
 import datetime
-import pyjokes
 import configparser
+from copy import deepcopy
+
+from .code.sendmail import sendmail
+
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.conf import settings
-from .models import Event, Halls, HallList, Mail, Location, LocList
+from django.core.paginator import Paginator
+
+from .models import Event, Halls, Mail, Location, LocList
 from .forms import EventForm
 from .filters import EventFilter, FastFilter
-from django.core.mail import EmailMultiAlternatives
-from copy import deepcopy
 
 
 # Экран списка всех мероприятий. Стартовый.
@@ -55,10 +58,6 @@ class EventList(ListView):
         return redirect('./')
 
 
-
-
-
-
 # Экран поиска мероприятий
 class EventSearch(ListView):
     model = Event
@@ -82,7 +81,7 @@ class EventSearch(ListView):
         return context
 
 
-# Создание мероприятия через формы
+# Создание мероприятия
 class EventCreate(CreateView):
     form_class = EventForm
     model = Event
@@ -146,6 +145,15 @@ def room_view(request, pk, **kwargs):
 
 
 # экран списка мероприятий
+# def list_view(request):
+#     event_slice, event_today = list_slice(True)
+#
+#     if event_today:
+#         return render(request, 'list.html', event_slice)
+#     else:
+#         return render(request, 'no_event.html')
+
+
 def list_view(request):
     date_show = datetime.datetime.now().strftime('%d.%m.%y')
     time_show = datetime.datetime.now().strftime('%H:%M')
@@ -155,82 +163,24 @@ def list_view(request):
                                        finish_time__gte=datetime.datetime.now().time(),
                                        room_in_list__isnull=False).order_by('begin_time').distinct()
 
-    # срезает список мероприятий по N штук через файл
     path_to_ini = f'{settings.INI_URL}Settings.ini'
-
     config = configparser.ConfigParser()
     try:
         config.read(f'{path_to_ini}')
-        NUMBER_OF_ROWS = int(config.get('List', 'row_counts'))  # количество строк на экране списка
-        count_event = int(len(event_today) // (NUMBER_OF_ROWS + 0.1))
-        line = int(config.get('List', 'sheet_number'))
-
-        if line > count_event:
-            config.set('List', 'sheet_number', '0')
-            with open(f'{path_to_ini}', 'w') as configfile:
-                config.write(configfile)
-            line = 0
+        NUMBER_OF_ROWS = int(config.get('List', 'row_counts'))
     except:
         NUMBER_OF_ROWS = 3
-        line = 0
 
-    slice = event_today[line * NUMBER_OF_ROWS:(line * NUMBER_OF_ROWS) + NUMBER_OF_ROWS]
-
-    try:
-        config.set('List', 'sheet_number', f'{line + 1}')
-        with open(f'{path_to_ini}', 'w') as configfile:
-            config.write(configfile)
-    except:
-        pass
+    paginator = Paginator(event_today, NUMBER_OF_ROWS)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
     if event_today:
-        return render(request, 'list.html', {'time_show': time_show,
-                                             'date_show': date_show,
-                                             'event_today': slice,
-                                             })
+        return render(request, 'list.html', {'event_today': page_obj,
+                                             'time_show': time_show,
+                                             'date_show': date_show, })
     else:
         return render(request, 'no_event.html')
-
-
-# Экран списка без смены среза мероприятий. Временно.
-def list_view_const(request):
-    date_show = datetime.datetime.now().strftime('%d.%m.%y')
-    time_show = datetime.datetime.now().strftime('%H:%M')
-    start_time = datetime.datetime.now() + datetime.timedelta(hours=3)
-    event_today = Event.objects.filter(data__exact=datetime.datetime.now().date(),
-                                       begin_time__lte=start_time.time(),
-                                       finish_time__gte=datetime.datetime.now().time(),
-                                       room_in_list__isnull=False).order_by('begin_time').distinct()
-    path_to_ini = f'{settings.INI_URL}Settings.ini'
-
-    try:
-        config = configparser.ConfigParser()
-        config.read(f'{path_to_ini}')
-        NUMBER_OF_ROWS = int(config.get('List', 'row_counts'))  # количество строк на экране списка
-        count_event = int(len(event_today) // (NUMBER_OF_ROWS + 0.1))
-        line = int(config.get('List', 'sheet_number'))
-        if line > count_event:
-            line = 0
-    except:
-        NUMBER_OF_ROWS = 3
-        line = 0
-
-    slice = event_today[line * NUMBER_OF_ROWS:(line * NUMBER_OF_ROWS) + NUMBER_OF_ROWS]
-
-    if event_today:
-        return render(request, 'list.html', {'time_show': time_show,
-                                             'date_show': date_show,
-                                             'event_today': slice,
-                                             })
-    else:
-        return render(request, 'no_event.html')
-
-
-# анекдот дня )
-def anek(request):
-    joke = pyjokes.get_joke()
-
-    return render(request, 'anek.html', {'joke': joke})
 
 
 # тестовая комната для предпросмотра
@@ -270,36 +220,7 @@ def send_list(request):
         if request.GET.get('date'):
             send_message = "ОТПРАВЛЕНО"
             day = request.GET.get("date")
-            events = Event.objects.filter(data__exact=day)
-            emails = Mail.objects.all().values_list('email', flat=True)
-            list_to_send_text = ''
-            list_to_send = '''<style type="text/css">
-                                table {background: #5ce532;border: 3px solid #000;} 
-                                td {background:  #fdff70; padding: 5px; border: 1px solid;}</style>
-                                <table><th>Дата</th><th>Время<br>проведения</th><th>Зал</th>
-                                <th>Название мероприятия</th><th>Кол-во<br>уч-ов</th><th>Компания</th>
-                                <th>Контакт организатора</th><th>Ответственный<br>менеджер</th><th>Парковка</th>'''
-
-            for item_list in events:
-                rooms = ""
-                for i in item_list.room.all():
-                    rooms += f' <b>{i.hall_name}</b> - {i.hall_place}<br>'
-                list_to_send_text += f'-- {item_list.title} --'
-                list_to_send += f'<tr><td>{item_list.data.strftime("%d-%m-%Y")}</td>' \
-                                f'<td>{item_list.begin_time.strftime("%H:%M")} - {item_list.finish_time.strftime("%H:%M")}</td>' \
-                                f'<td>{rooms}</td><td><strong>{item_list.title}</strong></td><td>{item_list.quantity}</td>' \
-                                f'<td>{item_list.description}</td><td>{item_list.contact}</td><td>{item_list.responce}</td>' \
-                                f'<td>{item_list.parking}</td></tr>'
-            list_to_send += '</table>'
-            if list_to_send_text == '':
-                list_to_send_text = 'Завтра мероприятий нет'
-                list_to_send = 'Завтра мероприятий нет'
-
-            for email in emails:
-                title = f'Мероприятия на: {tomorrow.strftime("%d-%m-%Y")}'
-                msg = EmailMultiAlternatives(title, list_to_send_text, None, [email])
-                msg.attach_alternative(list_to_send, "text/html")
-                msg.send()
+            sendmail(day)
         else:
             send_message =""
 
@@ -340,6 +261,7 @@ def copy(request, pk):
         loclist.save()
 
     return redirect('../../events')
+
 
 # help
 def help(request):
